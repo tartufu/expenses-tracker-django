@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+
 from django.db.models import Q
 
 
@@ -58,3 +60,35 @@ def sign_up(request):
             },
         }
     )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def sign_in(request):
+    username, password = (
+        request.data["username"],
+        request.data["password"],
+    )
+
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        token = get_tokens_for_user(user)
+        return Response(
+            {
+                "success": True,
+                "data": {
+                    "access": token["access"],
+                    "refresh": token["refresh"],
+                    "username": username,
+                    "email": user.email,
+                },
+            }
+        )
+    else:
+        return Response(
+            {
+                "success": False,
+                "errorMsg": "Invalid User or Password Details!",
+            }
+        )
