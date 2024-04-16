@@ -1,20 +1,31 @@
 from django.shortcuts import render
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth.models import User
 from django.db.models import Q
 
 
-@api_view(["GET", "POST"])
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def hello_world(request):
     return Response({"message": "Hello, world!"})
 
 
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+    }
+
+
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def sign_up(request):
     username, email, password = (
         request.data["username"],
@@ -32,10 +43,18 @@ def sign_up(request):
     except ValueError as e:
         return JsonResponse({"error": str(e)}, status=400)
 
-    user = User.objects.create_user(
-        username=request.data["username"],
-        email=request.data["email"],
-        password=request.data["password"],
+    user = User.objects.create_user(username=username, email=email, password=password)
+
+    token = get_tokens_for_user(user)
+
+    return Response(
+        {
+            "success": True,
+            "data": {
+                "access": token["access"],
+                "refresh": token["refresh"],
+                "username": username,
+                "email": email,
+            },
+        }
     )
-    # TODO return auth token, username and email
-    return Response({"message": "Hello, user!"})
