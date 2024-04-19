@@ -9,6 +9,9 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("sign-up/", views.sign_up, name="sign_up"),
     path("sign-in/", views.sign_in, name="sign_in"),
+    path(
+        "get-user-details/<str:user>/", views.get_user_details, name="get_user_details"
+    ),
 ]
 
 # https://medium.com/django-unleashed/securing-django-rest-apis-with-jwt-authentication-using-simple-jwt-a-step-by-step-guide-28efa84666fe

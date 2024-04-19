@@ -92,3 +92,9 @@ def sign_in(request):
                 "errorMsg": "Invalid User or Password Details!",
             }
         )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_details(request, user):
+    return Response({"message": "Hello, world!"})
