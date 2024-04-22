@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.utils import timezone
+
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -100,6 +102,33 @@ def sign_in(request):
 @permission_classes([IsAuthenticated])
 def get_user_details(request, user):
     return Response({"message": "Hello, world!"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_income(request, user):
+
+    user = User.objects.get(username=user)
+
+    current_month = timezone.now().month
+
+    user_income_list = Income.objects.filter(
+        user_id=user, created_at__month=current_month
+    ).values("amount")
+    user_income_sum = 0
+
+    print(user_income_list)
+
+    for income in user_income_list:
+        user_income_sum += income["amount"]
+
+    print(user_income_sum)
+    return Response(
+        {
+            "success": True,
+            "data": {"amount": user_income_sum},
+        }
+    )
 
 
 @api_view(["POST"])
