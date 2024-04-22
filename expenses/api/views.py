@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate
 
 from django.db.models import Q
 
+from .models import Income
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -98,3 +100,20 @@ def sign_in(request):
 @permission_classes([IsAuthenticated])
 def get_user_details(request, user):
     return Response({"message": "Hello, world!"})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_user_income(request, user):
+
+    amount = request.data["amount"]
+    user = User.objects.get(username=user)
+
+    print(request.data["amount"])
+    income_record = Income.objects.create(user_id=user, amount=amount)
+    return Response(
+        {
+            "success": True,
+            "data": {"amount": amount},
+        }
+    )

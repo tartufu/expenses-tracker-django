@@ -12,6 +12,7 @@ urlpatterns = [
     path(
         "get-user-details/<str:user>/", views.get_user_details, name="get_user_details"
     ),
+    path("<str:user>/add-income", views.add_user_income, name="add-user-income"),
 ]
 
 # https://medium.com/django-unleashed/securing-django-rest-apis-with-jwt-authentication-using-simple-jwt-a-step-by-step-guide-28efa84666fe
