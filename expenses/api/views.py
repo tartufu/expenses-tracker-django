@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate
 
 from django.db.models import Q
 
-from .models import Income
+from .models import Income, Category
 
 
 @api_view(["GET"])
@@ -153,5 +153,20 @@ def add_user_income(request, user):
         {
             "success": True,
             "data": {"amount": amount},
+        }
+    )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_transaction_types(request):
+
+    transaction_types = Category.objects.all()
+    transaction_types_list = list(transaction_types.values())
+
+    return Response(
+        {
+            "success": True,
+            "data": transaction_types_list,
         }
     )
