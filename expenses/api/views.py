@@ -101,7 +101,16 @@ def sign_in(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_details(request, user):
-    return Response({"message": "Hello, world!"})
+    print(user)
+    user = User.objects.get(id=user)
+    print(213123)
+    print(user.email)
+    return Response(
+        {
+            "success": True,
+            "data": {"email": user.email, "username": user.username},
+        }
+    )
 
 
 @api_view(["GET"])
