@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate
 
 from django.db.models import Q
 
-from .models import Income, Category
+from .models import Income, Category, Expense
 
 
 @api_view(["GET"])
@@ -144,15 +144,87 @@ def get_user_income(request, user):
 @permission_classes([IsAuthenticated])
 def add_user_income(request, user):
 
+    category = request.data["category"]
+    date = request.data["date"]["startDate"]
     amount = request.data["amount"]
+    notes = request.data["notes"]
+    label = request.data["label"]
     user = User.objects.get(username=user)
 
-    print(request.data["amount"])
-    income_record = Income.objects.create(user_id=user, amount=amount)
+    income_record = Income.objects.create(
+        user_id=user,
+        category=category,
+        notes=notes,
+        labels=label,
+        date=date,
+        amount=amount,
+    )
+
+    print(income_record)
     return Response(
         {
             "success": True,
             "data": {"amount": amount},
+        }
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_user_expense(request, user):
+
+    # const postBody = { type, category, date, amount, notes, label };
+
+    category = request.data["category"]
+    date = request.data["date"]["startDate"]
+    amount = request.data["amount"]
+    notes = request.data["notes"]
+    label = request.data["label"]
+    user = User.objects.get(username=user)
+
+    expense_record = Expense.objects.create(
+        user_id=user,
+        category=category,
+        notes=notes,
+        labels=label,
+        date=date,
+        amount=amount,
+    )
+    print(expense_record)
+
+    return Response(
+        {
+            "success": True,
+            "data": {"amount": 5555},
+        }
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_expense(request, user):
+
+    user = User.objects.get(username=user)
+
+    current_month = timezone.now().month
+
+    user_expense_list = Expense.objects.filter(
+        user_id=user, created_at__month=current_month
+    ).values("amount")
+    user_expense_sum = 0
+
+    print(user_expense_list)
+
+    for expense in user_expense_list:
+        user_expense_sum += expense["amount"]
+
+    print(user_expense_sum)
+
+    # print(user_expense_sum)
+    return Response(
+        {
+            "success": True,
+            "data": {"amount": user_expense_sum},
         }
     )
 

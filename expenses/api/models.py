@@ -7,17 +7,33 @@ from django.contrib.auth.models import User
 class Income(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
+    category = models.TextField(default=None)
+    notes = models.TextField(default=None)
+    labels = models.TextField(default=None)
     is_monthly_recurrring = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return (
+            f"{self.amount}, {self.date}, {self.category}, {self.notes}, {self.labels}"
+        )
 
-class Transaction(models.Model):
+
+class Expense(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
     category = models.TextField()
     notes = models.TextField()
+    labels = models.TextField()
     is_monthly_recurrring = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (
+            f"{self.amount}, {self.date}, {self.category}, {self.notes}, {self.labels}"
+        )
 
 
 class Category(models.Model):

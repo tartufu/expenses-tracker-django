@@ -12,12 +12,14 @@ urlpatterns = [
     path(
         "get-user-details/<str:user>/", views.get_user_details, name="get_user_details"
     ),
-    path("<str:user>/add-income", views.add_user_income, name="add-user-income"),
-    path("<str:user>/get-income", views.get_user_income, name="get-user-income"),
+    path("<str:user>/add-income", views.add_user_income, name="add_user_income"),
+    path("<str:user>/get-income", views.get_user_income, name="get_user_income"),
+    path("<str:user>/add-expense", views.add_user_expense, name="add_user_expense"),
+    path("<str:user>/get-expense", views.get_user_expense, name="get_user_expense"),
     path(
         "get-transaction-types",
         views.get_transaction_types,
-        name="get-transaction-types",
+        name="get_transaction_types",
     ),
 ]
 
