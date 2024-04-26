@@ -231,6 +231,29 @@ def get_user_expense(request, user):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def get_user_transaction(request, user):
+
+    # print(user_expense_sum)
+
+    user = User.objects.get(username="chang")
+
+    current_month = timezone.now().month
+
+    user_expense_list = Expense.objects.filter(
+        user_id=user, created_at__month=current_month
+    ).values()
+
+    user_income_list = Income.objects.filter(
+        user_id=user, created_at__month=current_month
+    ).values()
+
+    merged_list = user_expense_list.union(user_income_list).order_by("-date")
+
+    return Response({"success": True, "data": merged_list})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def get_transaction_types(request):
 
     transaction_types = Category.objects.all()
