@@ -10,6 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.forms.models import model_to_dict
+
 
 from django.db.models import Q
 
@@ -103,7 +105,6 @@ def sign_in(request):
 def get_user_details(request, user):
     print(user)
     user = User.objects.get(id=user)
-    print(213123)
     print(user.email)
     return Response(
         {
@@ -126,8 +127,6 @@ def get_user_income(request, user):
     ).values("amount")
     user_income_sum = 0
 
-    print(user_income_list)
-
     for income in user_income_list:
         user_income_sum += income["amount"]
 
@@ -149,6 +148,7 @@ def add_user_income(request, user):
     amount = request.data["amount"]
     notes = request.data["notes"]
     label = request.data["label"]
+    type = request.data["type"]
     user = User.objects.get(username=user)
 
     income_record = Income.objects.create(
@@ -158,13 +158,13 @@ def add_user_income(request, user):
         labels=label,
         date=date,
         amount=amount,
+        type=type,
     )
 
-    print(income_record)
     return Response(
         {
             "success": True,
-            "data": {"amount": amount},
+            "data": model_to_dict(income_record),
         }
     )
 
@@ -180,6 +180,8 @@ def add_user_expense(request, user):
     amount = request.data["amount"]
     notes = request.data["notes"]
     label = request.data["label"]
+    type = request.data["type"]
+
     user = User.objects.get(username=user)
 
     expense_record = Expense.objects.create(
@@ -189,15 +191,11 @@ def add_user_expense(request, user):
         labels=label,
         date=date,
         amount=amount,
+        type=type,
     )
     print(expense_record)
 
-    return Response(
-        {
-            "success": True,
-            "data": {"amount": 5555},
-        }
-    )
+    return Response({"success": True, "data": model_to_dict(expense_record)})
 
 
 @api_view(["GET"])
@@ -220,7 +218,6 @@ def get_user_expense(request, user):
 
     print(user_expense_sum)
 
-    # print(user_expense_sum)
     return Response(
         {
             "success": True,
