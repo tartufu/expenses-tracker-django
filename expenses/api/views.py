@@ -228,7 +228,7 @@ def get_user_expense(request, user):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
-def get_user_transaction(request, user):
+def get_all_user_transaction(request, user):
 
     # print(user_expense_sum)
 
