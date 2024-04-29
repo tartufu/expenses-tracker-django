@@ -17,6 +17,11 @@ urlpatterns = [
     path("<str:user>/add-expense", views.add_user_expense, name="add_user_expense"),
     path("<str:user>/get-expense", views.get_user_expense, name="get_user_expense"),
     path(
+        "<str:user>/delete-expense",
+        views.delete_user_expense,
+        name="delete_user_expense",
+    ),
+    path(
         "<str:user>/get-all-transaction",
         views.get_all_user_transaction,
         name="get_all_user_transaction",

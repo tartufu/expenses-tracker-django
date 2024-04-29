@@ -123,7 +123,7 @@ def get_user_income(request, user):
     current_month = timezone.now().month
 
     user_income_list = Income.objects.filter(
-        user_id=user, created_at__month=current_month
+        user_id=user, created_at__month=current_month, is_deleted=False
     ).values("amount")
     user_income_sum = 0
 
@@ -207,7 +207,7 @@ def get_user_expense(request, user):
     current_month = timezone.now().month
 
     user_expense_list = Expense.objects.filter(
-        user_id=user, created_at__month=current_month
+        user_id=user, created_at__month=current_month, is_deleted=False
     ).values("amount")
     user_expense_sum = 0
 
@@ -226,6 +226,30 @@ def get_user_expense(request, user):
     )
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def delete_user_expense(request, user):
+
+    id, type = (request.data["id"], request.data["type"])
+
+    record = None
+
+    if type == "Expense":
+        record = Expense.objects.get(id=request.data["id"])
+    if type == "Income":
+        record = Income.objects.get(id=request.data["id"])
+
+    record.is_deleted = True
+    record.save()
+
+    return Response(
+        {
+            "success": True,
+            "data": {"record": model_to_dict(record)},
+        }
+    )
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_all_user_transaction(request, user):
@@ -237,11 +261,11 @@ def get_all_user_transaction(request, user):
     current_month = timezone.now().month
 
     user_expense_list = Expense.objects.filter(
-        user_id=user, created_at__month=current_month
+        user_id=user, created_at__month=current_month, is_deleted=False
     ).values()
 
     user_income_list = Income.objects.filter(
-        user_id=user, created_at__month=current_month
+        user_id=user, created_at__month=current_month, is_deleted=False
     ).values()
 
     merged_list = user_expense_list.union(user_income_list).order_by("-date")
