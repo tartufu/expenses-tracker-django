@@ -169,6 +169,45 @@ def add_user_income(request, user):
     )
 
 
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def edit_user_income(request, user):
+
+    id, type, category, date, amount, notes, labels, is_monthly = (
+        request.data["id"],
+        request.data["type"],
+        request.data["category"],
+        request.data["date"]["startDate"],
+        request.data["amount"],
+        request.data["notes"],
+        request.data["label"],
+        request.data["isMonthly"],
+    )
+    print(request.data["id"])
+    print(request.data)
+
+    user_income = Income.objects.get(id=id)
+
+    print(user_income)
+
+    user_income.type = type
+    user_income.category = category
+    user_income.date = date
+    user_income.amount = amount
+    user_income.notes = notes
+    user_income.labels = labels
+    user_income.is_monthly = is_monthly
+
+    user_income.save()
+
+    return Response(
+        {
+            "success": True,
+            "data": {"user_income": model_to_dict(user_income)},
+        }
+    )
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_user_expense(request, user):
@@ -226,9 +265,48 @@ def get_user_expense(request, user):
     )
 
 
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def edit_user_expense(request, user):
+
+    id, type, category, date, amount, notes, labels, is_monthly = (
+        request.data["id"],
+        request.data["type"],
+        request.data["category"],
+        request.data["date"]["startDate"],
+        request.data["amount"],
+        request.data["notes"],
+        request.data["label"],
+        request.data["isMonthly"],
+    )
+    print(request.data["id"])
+    print(request.data)
+
+    user_expense = Expense.objects.get(id=id)
+
+    print(user_expense)
+
+    user_expense.type = type
+    user_expense.category = category
+    user_expense.date = date
+    user_expense.amount = amount
+    user_expense.notes = notes
+    user_expense.labels = labels
+    user_expense.is_monthly = is_monthly
+
+    user_expense.save()
+
+    return Response(
+        {
+            "success": True,
+            "data": {"user_expense": model_to_dict(user_expense)},
+        }
+    )
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def delete_user_expense(request, user):
+def delete_user_transaction(request, user):
 
     id, type = (request.data["id"], request.data["type"])
 
@@ -245,7 +323,7 @@ def delete_user_expense(request, user):
     return Response(
         {
             "success": True,
-            "data": {"record": model_to_dict(record)},
+            "data": {"id": record.id},
         }
     )
 

@@ -14,12 +14,14 @@ urlpatterns = [
     ),
     path("<str:user>/add-income", views.add_user_income, name="add_user_income"),
     path("<str:user>/get-income", views.get_user_income, name="get_user_income"),
+    path("<str:user>/edit-income", views.edit_user_income, name="edit_user_income"),
     path("<str:user>/add-expense", views.add_user_expense, name="add_user_expense"),
+    path("<str:user>/edit-expense", views.edit_user_expense, name="edit_user_expense"),
     path("<str:user>/get-expense", views.get_user_expense, name="get_user_expense"),
     path(
-        "<str:user>/delete-expense",
-        views.delete_user_expense,
-        name="delete_user_expense",
+        "<str:user>/delete-transaction",
+        views.delete_user_transaction,
+        name="delete_user_transaction",
     ),
     path(
         "<str:user>/get-all-transaction",
