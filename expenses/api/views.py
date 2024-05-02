@@ -16,12 +16,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 
 from .models import Income, Category, Expense
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def hello_world(request):
-    return Response({"message": "Hello, world!"})
+from .serializers import serializeData, ExpenseSerializer, IncomeSerializer
 
 
 def get_tokens_for_user(user):
@@ -40,8 +35,6 @@ def sign_up(request):
         request.data["email"],
         request.data["password"],
     )
-
-    print(username, email, password)
 
     try:
         user = User.objects.filter(Q(username=username) | Q(email=email))
@@ -103,9 +96,7 @@ def sign_in(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_details(request, user):
-    print(user)
     user = User.objects.get(id=user)
-    print(user.email)
     return Response(
         {
             "success": True,
@@ -120,17 +111,16 @@ def get_user_income(request, user):
 
     user = User.objects.get(username=user)
 
-    current_month = timezone.now().month
+    # current_month = timezone.now().month
 
-    user_income_list = Income.objects.filter(
-        user_id=user, created_at__month=current_month, is_deleted=False
-    ).values("amount")
+    user_income_list = Income.objects.filter(user_id=user, is_deleted=False).values(
+        "amount"
+    )
     user_income_sum = 0
 
     for income in user_income_list:
         user_income_sum += income["amount"]
 
-    print(user_income_sum)
     return Response(
         {
             "success": True,
@@ -164,7 +154,7 @@ def add_user_income(request, user):
     return Response(
         {
             "success": True,
-            "data": model_to_dict(income_record),
+            "data": serializeData(IncomeSerializer, income_record),
         }
     )
 
@@ -183,12 +173,8 @@ def edit_user_income(request, user):
         request.data["label"],
         request.data["isMonthly"],
     )
-    print(request.data["id"])
-    print(request.data)
 
     user_income = Income.objects.get(id=id)
-
-    print(user_income)
 
     user_income.type = type
     user_income.category = category
@@ -203,7 +189,7 @@ def edit_user_income(request, user):
     return Response(
         {
             "success": True,
-            "data": {"user_income": model_to_dict(user_income)},
+            "data": {"user_income": serializeData(IncomeSerializer, user_income)},
         }
     )
 
@@ -232,9 +218,10 @@ def add_user_expense(request, user):
         amount=amount,
         type=type,
     )
-    print(expense_record)
 
-    return Response({"success": True, "data": model_to_dict(expense_record)})
+    return Response(
+        {"success": True, "data": serializeData(ExpenseSerializer, expense_record)}
+    )
 
 
 @api_view(["GET"])
@@ -243,19 +230,15 @@ def get_user_expense(request, user):
 
     user = User.objects.get(username=user)
 
-    current_month = timezone.now().month
+    # current_month = timezone.now().month
 
-    user_expense_list = Expense.objects.filter(
-        user_id=user, created_at__month=current_month, is_deleted=False
-    ).values("amount")
+    user_expense_list = Expense.objects.filter(user_id=user, is_deleted=False).values(
+        "amount"
+    )
     user_expense_sum = 0
-
-    print(user_expense_list)
 
     for expense in user_expense_list:
         user_expense_sum += expense["amount"]
-
-    print(user_expense_sum)
 
     return Response(
         {
@@ -279,12 +262,8 @@ def edit_user_expense(request, user):
         request.data["label"],
         request.data["isMonthly"],
     )
-    print(request.data["id"])
-    print(request.data)
 
     user_expense = Expense.objects.get(id=id)
-
-    print(user_expense)
 
     user_expense.type = type
     user_expense.category = category
@@ -299,7 +278,7 @@ def edit_user_expense(request, user):
     return Response(
         {
             "success": True,
-            "data": {"user_expense": model_to_dict(user_expense)},
+            "data": {"user_expense": serializeData(ExpenseSerializer, user_expense)},
         }
     )
 
@@ -332,19 +311,13 @@ def delete_user_transaction(request, user):
 @permission_classes([AllowAny])
 def get_all_user_transaction(request, user):
 
-    # print(user_expense_sum)
+    user = User.objects.get(username=user)
 
-    user = User.objects.get(username="chang")
+    # current_month = timezone.now().month
 
-    current_month = timezone.now().month
+    user_expense_list = Expense.objects.filter(user_id=user, is_deleted=False).values()
 
-    user_expense_list = Expense.objects.filter(
-        user_id=user, created_at__month=current_month, is_deleted=False
-    ).values()
-
-    user_income_list = Income.objects.filter(
-        user_id=user, created_at__month=current_month, is_deleted=False
-    ).values()
+    user_income_list = Income.objects.filter(user_id=user, is_deleted=False).values()
 
     merged_list = user_expense_list.union(user_income_list).order_by("-date")
 
