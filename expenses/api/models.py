@@ -16,7 +16,7 @@ class Income(models.Model):
     category = models.TextField()
     notes = models.TextField()
     labels = models.TextField(blank=True, null=True)
-    is_monthly_recurrring = models.BooleanField(default=False)
+    is_monthly_recurring = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     type = models.TextField()
     is_deleted = models.BooleanField(default=False)
@@ -35,15 +35,13 @@ class Expense(models.Model):
     category = models.TextField()
     notes = models.TextField()
     labels = models.TextField(blank=True, null=True)
-    is_monthly_recurrring = models.BooleanField(default=False)
+    is_monthly_recurring = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     type = models.TextField()
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return (
-            f"{self.amount}, {self.date}, {self.category}, {self.notes}, {self.labels}"
-        )
+        return f"{self.amount}, {self.date}, {self.category}, {self.notes}, {self.id}"
 
 
 class Category(models.Model):
